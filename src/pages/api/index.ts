@@ -50,9 +50,9 @@ const pwd = import.meta.env.PASSWORD
 export const post: APIRoute = async context => {
   try {
     const body = await context.request.json()
-    const {
+    let {
       messages,
-      key = localKey,
+      key,
       temperature = 0.6,
       password
     } = body as {
@@ -62,8 +62,16 @@ export const post: APIRoute = async context => {
       password?: string
     }
 
+    if(!password && !key){
+      throw new Error('密码和Key, 必须提供其一，不可以白嫖哦')
+    }
+
     if (pwd && pwd !== password) {
       throw new Error("密码错误，请联系网站管理员。")
+    }
+
+    if(!key && password){
+      key = localKey
     }
 
     if (!messages?.length) {
